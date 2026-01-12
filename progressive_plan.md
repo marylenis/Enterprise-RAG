@@ -36,14 +36,14 @@ Configurar la base del proyecto y el mecanismo para leer archivos locales en div
 Implementar el núcleo de búsqueda utilizando modelos comerciales (GPT-4/Claude), persistencia en Qdrant y soporte para múltiples versiones.
 
 ### Tareas:
-*   **Tarea 2.1: Modelado de Embeddings y Chunking**
+*   **Tarea 2.1: Modelado de Embeddings y Chunking [COMPLETADA]**
     *   Implementar una estrategia de chunking semántico (300-500 tokens).
     *   Configurar el modelo de embeddings (ej. `text-embedding-3-small` de OpenAI).
-*   **Tarea 2.2: Construcción del Índice Vectorial con Historial Completo**
+*   **Tarea 2.2: Construcción del Índice Vectorial con Historial Completo [COMPLETADA]**
     *   Implementar la inserción de vectores en Qdrant asegurando la **no-sobreescritura** de versiones antiguas.
     *   Enriquecer metadatos: `file_name`, `page`, `version_id`, `author`, `updated_at` y label `is_active`.
     *   Lógica de filtrado dinámico para que las búsquedas estándar usen `is_active=true` y las de auditoría puedan acceder a todo el historial.
-*   **Tarea 2.3: Motor de Consulta (Query Engine)**
+*   **Tarea 2.3: Motor de Consulta (Query Engine) [COMPLETADA]**
     *   Crear el pipeline de consulta básico que recupere contexto de Qdrant y genere respuestas con GPT-4/Claude.
 
 ## Fase 3: Capa de Conocimiento (Graph RAG)
@@ -103,4 +103,4 @@ Crear una interfaz moderna, responsiva y de alto impacto visual para interactuar
     *   Conectar el frontend con `/query` y `/audit` usando comunicación asíncrona.
 
 ---
-## Estado Actual: Fase 1 completada al 100%. Listos para iniciar la Fase 2: Pipeline RAG y Búsqueda Vectorial.
+## Estado Actual: Fase 2 completada al 100%. Iniciando Fase 3: Capa de Conocimiento (Graph RAG).
