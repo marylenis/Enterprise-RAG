@@ -23,11 +23,11 @@ Configurar la base del proyecto y el mecanismo para leer archivos locales en div
     *   Validar la carga recursiva de la carpeta `/data`.
 *   **Tarea 1.3: Gestión de Variables de Entorno [COMPLETADA]**
     *   Crear `.env.example` y `.env` para manejar la ruta de la carpeta local y las API Keys de OpenAI/Anthropic.
-*   **Tarea 1.4: Lógica de Versionado e Historial de Auditoría**
+*   **Tarea 1.4: Lógica de Versionado e Historial de Auditoría [COMPLETADA]**
     *   Implementar un sistema de hashing (SHA-256) para detectar cambios.
     *   Crear una base de datos de auditoría (SQLite o similar) que registre: `hash`, `file_path`, `author`, `timestamp` y `version_number`.
     *   Diseñar el flujo de captura del usuario/autor del cambio (vía API o metadatos del sistema de archivos).
-*   **Tarea 1.5: Dockerización Inicial**
+*   **Tarea 1.5: Dockerización Inicial [COMPLETADA]**
     *   Crear `Dockerfile` y `docker-compose.yml` para levantar la instancia de Qdrant y el entorno de desarrollo.
 
 ## Fase 2: Pipeline RAG y Búsqueda Vectorial
@@ -103,4 +103,4 @@ Crear una interfaz moderna, responsiva y de alto impacto visual para interactuar
     *   Conectar el frontend con `/query` y `/audit` usando comunicación asíncrona.
 
 ---
-## Estado Actual: Tarea 1.3 completada. Iniciando Tarea 1.4 (Lógica de Versionado e Historial de Auditoría).
+## Estado Actual: Fase 1 completada al 100%. Listos para iniciar la Fase 2: Pipeline RAG y Búsqueda Vectorial.
