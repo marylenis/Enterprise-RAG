@@ -103,4 +103,4 @@ Crear una interfaz moderna, responsiva y de alto impacto visual para interactuar
     *   Conectar el frontend con `/query` y `/audit` usando comunicación asíncrona.
 
 ---
-## Estado Actual: Fase 2 completada al 100%. Iniciando Fase 3: Capa de Conocimiento (Graph RAG).
+## Estado Actual: Verificando Fases 1 y 2 con Pruebas Unitarias antes de iniciar Fase 3.

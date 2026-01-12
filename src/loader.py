@@ -1,7 +1,5 @@
 from llama_index.core import SimpleDirectoryReader
 import os
-from azure.identity import DefaultAzureCredential
-from azure.storage.blob import BlobServiceClient
 
 def get_directory_reader(directory_path: str):
     """
