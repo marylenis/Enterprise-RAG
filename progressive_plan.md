@@ -46,19 +46,24 @@ Implementar el núcleo de búsqueda utilizando modelos comerciales (GPT-4/Claude
 *   **Tarea 2.3: Motor de Consulta (Query Engine) [COMPLETADA]**
     *   Crear el pipeline de consulta básico que recupere contexto de Qdrant y genere respuestas con GPT-4/Claude.
 
-## Fase 3: Capa de Conocimiento (Graph RAG)
+## Fase 3: Capa de Conocimiento (Graph RAG) - [ATDD Workflow]
 
 ### Objetivos:
-Enriquecer el contexto con relaciones semánticas usando FalkorDB y Graphity.
+Enriquecer el contexto con relaciones semánticas usando FalkorDB y Graphity, validando cada paso con pruebas de aceptación.
 
 ### Tareas:
-*   **Tarea 3.1: Configuración de FalkorDB**
-    *   Añadir el servicio de FalkorDB al `docker-compose.yml`.
-*   **Tarea 3.2: Modelado del Grafo de Conocimiento**
-    *   Definir el esquema de entidades: **Documento**, **Tema**, **Proyecto**, **Tecnología** y **Autor**.
-    *   Implementar la lógica de extracción automática de estas entidades usando Graphity y prompts especializados.
-*   **Tarea 3.3: Búsqueda Híbrida (Vector + Graph)**
-    *   Integrar la travesía del grafo en el pipeline de recuperación para mejorar la precisión en consultas complejas.
+*   **Tarea 3.1: Infraestructura y Conectividad (Red-Green-Refactor)**
+    *   **Aceptación:** FalkorDB debe estar disponible y responder a comandos básicos.
+    *   Añadir FalkorDB al `docker-compose.yml`.
+    *   Validar conexión mediante un script de prueba de salud.
+*   **Tarea 3.2: Modelado y Extracción del Grafo**
+    *   **Aceptación:** Un documento procesado debe generar nodos de tipo Documento, Tema, Proyecto, Tecnología y Autor, con sus relaciones correspondientes.
+    *   **Test-First:** Crear `tests/test_graph_logic.py` simulando la extracción.
+    *   Implementar la extracción con Graphity/LlamaIndex para hacer pasar las pruebas.
+*   **Tarea 3.3: Búsqueda Híbrida Integrada**
+    *   **Aceptación:** Una consulta compleja debe recuperar contexto tanto del Vector Store como del Grafo.
+    *   **Test-First:** Crear escenario de prueba en `tests/test_hybrid_retrieval.py`.
+    *   Implementar el `HybridRetriever`.
 
 ## Fase 4: API de Servicio y Control de Costes
 

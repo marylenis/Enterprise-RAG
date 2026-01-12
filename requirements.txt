@@ -1,8 +1,13 @@
-llama-index
+llama-index-core
+llama-index-llms-openai
 llama-index-embeddings-openai
+llama-index-readers-file
+llama-index-vector-stores-qdrant
+llama-index-graph-stores-falkordb
 fastapi
 uvicorn
 qdrant-client
+falkordb
 python-dotenv
 pydantic
 pydantic-settings

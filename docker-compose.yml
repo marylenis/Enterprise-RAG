@@ -26,11 +26,25 @@ services:
       - ./data:/app/data
     depends_on:
       - qdrant
+      - falkordb
+    command: python src/main.py
+    networks:
+      - rag-network
+
+  # Base de datos de grafos
+  falkordb:
+    image: falkordb/falkordb:latest
+    container_name: enterprise-rag-falkordb
+    ports:
+      - "6379:6379"
+    volumes:
+      - falkordb_data:/data
     networks:
       - rag-network
 
 volumes:
   qdrant_data:
+  falkordb_data:
 
 
 networks:
