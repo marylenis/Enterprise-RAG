@@ -1,4 +1,5 @@
 llama-index
+llama-index-embeddings-openai
 fastapi
 uvicorn
 qdrant-client
@@ -6,4 +7,6 @@ python-dotenv
 pydantic
 pydantic-settings
 python-multipart
+pytest
+pytest-mock
 dependency-injector

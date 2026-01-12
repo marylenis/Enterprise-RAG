@@ -13,24 +13,25 @@ services:
     networks:
       - rag-network
 
-  # Aplicación RAG (deshabilitada por defecto hasta tener src/main.py)
-  # app:
-  #   build: .
-  #   container_name: enterprise-rag-api
-  #   ports:
-  #     - "8000:8000"
-  #   env_file:
-  #     - .env
-  #   volumes:
-  #     - .:/app
-  #     - ./data:/app/data
-  #   depends_on:
-  #     - qdrant
-  #   networks:
-  #     - rag-network
+  # Aplicación RAG
+  app:
+    build: .
+    container_name: enterprise-rag-api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - ./data:/app/data
+    depends_on:
+      - qdrant
+    networks:
+      - rag-network
 
 volumes:
   qdrant_data:
+
 
 networks:
   rag-network:
