@@ -1,0 +1,9 @@
+llama-index
+fastapi
+uvicorn
+qdrant-client
+python-dotenv
+pydantic
+pydantic-settings
+python-multipart
+dependency-injector

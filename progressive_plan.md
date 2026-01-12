@@ -15,13 +15,13 @@ Este documento se construirá paso a paso a medida que se respondan las pregunta
 Configurar la base del proyecto y el mecanismo para leer archivos locales en diversos formatos.
 
 ### Tareas:
-*   **Tarea 1.1: Inicialización del Proyecto**
+*   **Tarea 1.1: Inicialización del Proyecto [COMPLETADA]**
     *   Crear la estructura de carpetas estándar: `/data` (para los archivos locales), `/src` (código fuente) y `/config`.
     *   Definir el archivo `requirements.txt` con las librerías base (LlamaIndex, FastAPI, Qdrant-client).
-*   **Tarea 1.2: Configuración del Lector de Archivos Locales**
+*   **Tarea 1.2: Configuración del Lector de Archivos Locales [COMPLETADA]**
     *   Implementar `SimpleDirectoryReader` de LlamaIndex configurado para filtrar tipos de archivos `.pdf`, `.md`, `.docx`, `.xlsx`.
     *   Validar la carga recursiva de la carpeta `/data`.
-*   **Tarea 1.3: Gestión de Variables de Entorno**
+*   **Tarea 1.3: Gestión de Variables de Entorno [COMPLETADA]**
     *   Crear `.env.example` y `.env` para manejar la ruta de la carpeta local y las API Keys de OpenAI/Anthropic.
 *   **Tarea 1.4: Lógica de Versionado e Historial de Auditoría**
     *   Implementar un sistema de hashing (SHA-256) para detectar cambios.
@@ -103,4 +103,4 @@ Crear una interfaz moderna, responsiva y de alto impacto visual para interactuar
     *   Conectar el frontend con `/query` y `/audit` usando comunicación asíncrona.
 
 ---
-## Estado Actual: Añadida Fase de Frontend al plan. Pendiente de aprobación final.
+## Estado Actual: Tarea 1.3 completada. Iniciando Tarea 1.4 (Lógica de Versionado e Historial de Auditoría).
