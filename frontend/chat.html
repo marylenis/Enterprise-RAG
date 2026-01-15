@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Query Center - AI Chat | Enterprise RAG</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  
+  <!-- Space Grotesk Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/src/styles/main.css" />
+</head>
+<body class="bg-background-dark font-display text-white overflow-hidden h-screen flex flex-col">
+  
+  <!-- Navigation Component -->
+  <nav-component></nav-component>
+  
+  <!-- Chat Component -->
+  <chat-component></chat-component>
+  
+  <!-- Scripts -->
+  <script type="module" src="/src/api/client.js"></script>
+  <script type="module" src="/src/components/navigation.js"></script>
+  <script type="module" src="/src/components/chat.js"></script>
+  
+  <!-- Initialize Page -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('Chat page initialized');
+      
+      // Set active navigation state
+      const nav = document.querySelector('nav-component');
+      if (nav) nav.setActivePage('chat');
+    });
+  </script>
+</body>
+</html>

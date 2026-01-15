@@ -1,0 +1,193 @@
+/* Base styles for Cyber-Vibrant Premium Look */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
+/* Custom component classes */
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel {
+  background: rgba(15, 32, 36, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 208, 255, 0.2);
+  box-shadow: 0 0 15px rgba(0, 208, 255, 0.05);
+}
+
+.neon-border-cyan {
+  border: 1px solid rgba(0, 208, 255, 0.4);
+  box-shadow: 0 0 15px rgba(0, 208, 255, 0.1);
+}
+
+.neon-border-pink {
+  border: 1px solid rgba(255, 0, 122, 0.4);
+  box-shadow: 0 0 15px rgba(255, 0, 122, 0.1);
+}
+
+.neon-glow-cyan {
+  text-shadow: 0 0 10px rgba(0, 208, 255, 0.5);
+}
+
+.neon-glow-pink {
+  text-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
+}
+
+.neon-glow-purple {
+  text-shadow: 0 0 10px rgba(157, 78, 221, 0.5);
+}
+
+.cyber-bg {
+  background: radial-gradient(circle at 50% 50%, #1a1b3a 0%, #0a0e29 100%);
+}
+
+.sparkle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #FF007A;
+  box-shadow: 0 0 8px 1px #FF007A;
+  opacity: 0.6;
+}
+
+.gradient-pink-cyan {
+  background: linear-gradient(135deg, #FF007A 0%, #00d0ff 100%);
+}
+
+.gradient-text-pink-cyan {
+  background: linear-gradient(90deg, #00d0ff, #FF007A);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.holographic-bg {
+  background: linear-gradient(135deg, rgba(0, 208, 255, 0.08) 0%, rgba(255, 45, 133, 0.08) 100%);
+}
+
+.pink-glow-bg {
+  background: radial-gradient(ellipse at top right, rgba(255, 0, 229, 0.08), transparent 60%),
+              radial-gradient(ellipse at bottom left, rgba(0, 208, 255, 0.05), transparent 60%);
+}
+
+.card-perspective {
+  transition: transform 0.3s ease;
+  transform-style: preserve-3d;
+}
+
+.card-perspective:hover {
+  transform: translateY(-5px) rotateX(2deg) rotateY(2deg);
+}
+
+.pulse-neon-pink-cyan {
+  animation: pulse-glow 3s infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(0, 208, 255, 0.3), inset 0 0 10px rgba(255, 45, 133, 0.2);
+    border-color: rgba(0, 208, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(255, 45, 133, 0.4), inset 0 0 15px rgba(0, 208, 255, 0.3);
+    border-color: rgba(255, 45, 133, 0.6);
+  }
+}
+
+.heatmap-cell {
+  transition: all 0.2s ease;
+}
+
+.heatmap-cell:hover {
+  transform: scale(1.1);
+  z-index: 10;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+}
+
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  animation: typing-bounce 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) {
+  animation-delay: -0.32s;
+  background: #FF007A;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: -0.16s;
+  background: #8068bd;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0s;
+  background: #00d0ff;
+}
+
+@keyframes typing-bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+/* Loading states */
+.loading-skeleton {
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0.05) 25%, 
+    rgba(255,255,255,0.1) 50%, 
+    rgba(255,255,255,0.05) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Utility classes */
+.backdrop-blur-md {
+  backdrop-filter: blur(12px);
+}
+
+.backdrop-blur-lg {
+  backdrop-filter: blur(16px);
+}
+
+.text-shadow-neon {
+  text-shadow: 0 0 10px currentColor;
+}
+
+.border-glow {
+  box-shadow: 0 0 15px rgba(0, 208, 255, 0.3);
+}

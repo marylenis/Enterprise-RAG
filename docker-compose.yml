@@ -36,6 +36,25 @@ services:
       retries: 3
       start_period: 40s
 
+  # Frontend Application
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: enterprise-rag-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+    networks:
+      - rag-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   # Redis for Caching
   redis:
     image: redis:7-alpine
