@@ -71,3 +71,4 @@ qdrant_data/
 falkordb_data/
 storage/
 .docker/
+error_stack*.txt

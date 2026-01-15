@@ -72,26 +72,42 @@ class VectorIndexManager:
 
         return indexed_count
 
+    def get_index(self):
+        """
+        Returns a VectorStoreIndex from the existing qdrant store.
+        """
+        return VectorStoreIndex.from_vector_store(
+            vector_store=self.vector_store,
+            storage_context=self.storage_context
+        )
+
     def _deactivate_old_versions(self, file_path: str):
         """
         Update is_active metadata for previous versions of the file in Qdrant.
         """
-        self.client.set_payload(
-            collection_name=self.collection_name,
-            payload={"is_active": False},
-            points_filter=models.Filter(
-                must=[
-                    models.FieldCondition(
-                        key="file_path",
-                        match=models.MatchValue(value=file_path)
-                    ),
-                    models.FieldCondition(
-                        key="is_active",
-                        match=models.MatchValue(value=True)
-                    )
-                ]
+        try:
+            # Check if collection exists
+            if not self.client.collection_exists(self.collection_name):
+                return
+                
+            self.client.set_payload(
+                collection_name=self.collection_name,
+                payload={"is_active": False},
+                points_filter=models.Filter(
+                    must=[
+                        models.FieldCondition(
+                            key="file_path",
+                            match=models.MatchValue(value=file_path)
+                        ),
+                        models.FieldCondition(
+                            key="is_active",
+                            match=models.MatchValue(value=True)
+                        )
+                    ]
+                )
             )
-        )
+        except Exception as e:
+            print(f"Warning: Could not deactivate old versions: {e}")
 
 if __name__ == "__main__":
     # Test vector index manager

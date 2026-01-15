@@ -2,9 +2,7 @@ import os
 from enum import Enum
 from typing import List, Optional
 from falkordb import FalkorDB
-from llama_index.core import Document, PropertyGraphIndex, StorageContext
-from llama_index.graph_stores.falkordb import FalkorDBGraphStore
-from llama_index.core.indices.property_graph import SchemaLLMPathExtractor
+from llama_index.core import Document
 from llama_index.llms.openai import OpenAI
 from dotenv import load_dotenv
 
@@ -25,55 +23,78 @@ class RelationType(str, Enum):
     ESCRITO_POR = "EscritoPor"
 
 class GraphManager:
+    """
+    Simplified Graph Manager using native FalkorDB connection.
+    Extracts entities and relationships using LLM and stores them directly in FalkorDB.
+    """
     def __init__(self, graph_name: str = "enterprise_knowledge"):
         self.host = os.getenv("FALKORDB_HOST", "localhost")
         self.port = int(os.getenv("FALKORDB_PORT", 6379))
         self.graph_name = graph_name
         
-        # Initialize FalkorDB Graph Store
-        self.graph_store = FalkorDBGraphStore(
-            host=self.host,
-            port=self.port,
-            graph_name=self.graph_name
-        )
-        self.storage_context = StorageContext.from_defaults(graph_store=self.graph_store)
+        # Native FalkorDB connection
+        self.db = FalkorDB(host=self.host, port=self.port)
+        self.graph = self.db.select_graph(graph_name)
         
-        # LLM for Extraction
-        self.llm = OpenAI(model="gpt-4o")
-        
-        # Schema Definition
-        self.validation_schema = [
-            (EntityType.DOCUMENT, RelationType.MENCIONA, EntityType.PROJECT),
-            (EntityType.DOCUMENT, RelationType.TRATA_SOBRE, EntityType.TOPIC),
-            (EntityType.DOCUMENT, RelationType.ESCRITO_POR, EntityType.AUTHOR),
-            (EntityType.PROJECT, RelationType.LIDERADO_POR, EntityType.AUTHOR),
-            (EntityType.PROJECT, RelationType.UTILIZA, EntityType.TECHNOLOGY),
-        ]
-        
-        self.extractor = SchemaLLMPathExtractor(
-            llm=self.llm,
-            possible_entities=EntityType,
-            possible_relations=RelationType,
-            kg_validation_schema=self.validation_schema,
-            strict=True
-        )
+        # LLM for extraction
+        self.llm = OpenAI(model="gpt-4o", temperature=0)
 
     def index_documents(self, documents: List[Document]):
         """
-        Processes documents, extracts the graph, and stores it in FalkorDB.
+        Extracts entities and relationships from documents using LLM prompting.
         """
-        index = PropertyGraphIndex.from_documents(
-            documents,
-            storage_context=self.storage_context,
-            kg_extractors=[self.extractor],
-            show_progress=True
-        )
-        return index
+        for doc in documents:
+            self._extract_and_store(doc)
+        return len(documents)
 
-    def query_graph(self, query_str: str):
+    def _extract_and_store(self, doc: Document):
         """
-        Performs a query specifically on the graph.
+        Uses LLM to extract entities and stores them in FalkorDB.
         """
-        index = PropertyGraphIndex.from_existing_index(self.storage_context)
-        query_engine = index.as_query_engine(llm=self.llm)
-        return query_engine.query(query_str)
+        extraction_prompt = f"""
+Analiza el siguiente texto y extrae entidades y relaciones según este esquema:
+
+ENTIDADES: Document, Topic, Project, Technology, Author
+RELACIONES: Menciona, LideradoPor, Utiliza, TrataSobre, EscritoPor
+
+Texto:
+{doc.text[:1000]}
+
+Responde SOLO con comandos Cypher para crear nodos y relaciones. Ejemplo:
+MERGE (d:Document {{name: 'doc1'}})
+MERGE (p:Project {{name: 'ProjectX'}})
+MERGE (d)-[:Menciona]->(p)
+"""
+        
+        try:
+            response = self.llm.complete(extraction_prompt)
+            cypher_commands = str(response).strip().split('\n')
+            
+            for command in cypher_commands:
+                command = command.strip()
+                if command and (command.startswith('MERGE') or command.startswith('CREATE')):
+                    try:
+                        self.graph.query(command)
+                    except Exception as e:
+                        print(f"Error executing Cypher: {command[:50]}... - {e}")
+        except Exception as e:
+            print(f"Error in LLM extraction: {e}")
+
+    def query_graph(self, query_str: str) -> str:
+        """
+        Queries the graph for relevant relationships.
+        """
+        # Simple query to get recent relationships
+        try:
+            result = self.graph.query(
+                "MATCH (n)-[r]->(m) RETURN type(r) as relation, labels(n)[0] as from_type, labels(m)[0] as to_type LIMIT 10"
+            )
+            
+            if result.result_set:
+                relations = []
+                for row in result.result_set:
+                    relations.append(f"{row[1]} -{row[0]}-> {row[2]}")
+                return "Relaciones encontradas:\n" + "\n".join(relations)
+            return "No se encontraron relaciones en el grafo."
+        except Exception as e:
+            return f"Error consultando el grafo: {e}"

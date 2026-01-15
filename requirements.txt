@@ -15,3 +15,10 @@ python-multipart
 pytest
 pytest-mock
 dependency-injector
+redis
+hiredis
+ragas
+datasets
+transformers
+evaluate
+prometheus-client
