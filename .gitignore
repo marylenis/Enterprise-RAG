@@ -72,3 +72,4 @@ falkordb_data/
 storage/
 .docker/
 error_stack*.txt
+.ruff_cache

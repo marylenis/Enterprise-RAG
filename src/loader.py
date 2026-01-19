@@ -11,7 +11,7 @@ def get_directory_reader(directory_path: str):
     return SimpleDirectoryReader(
         input_dir=directory_path,
         recursive=True,
-        required_exts=[".pdf", ".md", ".docx", ".xlsx"],
+        required_exts=[".pdf", ".md", ".docx", ".xlsx", ".txt", ".json"],
     )
 
 if __name__ == "__main__":

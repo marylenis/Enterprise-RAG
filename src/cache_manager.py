@@ -1,10 +1,14 @@
 import redis
 import json
 import hashlib
+import redis
 from typing import Optional, Dict, Any
 from datetime import datetime, timedelta
 import os
-from src.embeddings import EMBEDDING_MODEL
+
+
+# Global embedding model constant
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
 
 
 class CacheManager:

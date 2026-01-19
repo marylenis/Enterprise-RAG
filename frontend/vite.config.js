@@ -1,19 +1,21 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vite';
+import { resolve } from 'path';
 
 export default defineConfig({
-  root: '.',
   build: {
-    outDir: 'dist',
-    emptyOutDir: true,
     rollupOptions: {
       input: {
-        main: './index.html',
-        chat: './chat.html',
-      }
-    }
+        main: resolve(__dirname, 'index.html'),
+        chat: resolve(__dirname, 'chat.html'),
+        documents: resolve(__dirname, 'documents.html'),
+        analytics: resolve(__dirname, 'analytics.html'),
+        quality: resolve(__dirname, 'quality.html'),
+        settings: resolve(__dirname, 'settings.html'),
+      },
+    },
   },
   server: {
-    port: 5173,
-    host: true
-  }
-})
+    host: true,
+    port: 80, // For dev mode inside container if needed
+  },
+});

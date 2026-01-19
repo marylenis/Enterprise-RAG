@@ -42,8 +42,11 @@ class AuditManager:
         """
         Heuristic to detect changes. Returns audit info if changed or new.
         """
+        if not os.path.exists(file_path):
+            return None
         current_hash = self.get_file_hash(file_path)
 
+        file_path = str(file_path)
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             # Get latest version for this file
@@ -104,6 +107,21 @@ class AuditManager:
                 }
                 for row in results
             ]
+
+    def deactivate_version(self, file_hash: str):
+        """Mark a document version as inactive"""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    "UPDATE document_audit SET is_active = 0 WHERE file_hash = ?",
+                    (file_hash,),
+                )
+                conn.commit()
+                return True
+        except Exception as e:
+            print(f"Error deactivating version: {e}")
+            return False
 
 
 if __name__ == "__main__":

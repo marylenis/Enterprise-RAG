@@ -4,7 +4,7 @@
  */
 
 class RAGAPIClient {
-  constructor(baseURL = 'http://localhost:8000') {
+  constructor(baseURL = '/api') { // Use relative path when served via Nginx
     this.baseURL = baseURL;
     this.defaultHeaders = {
       'Content-Type': 'application/json',
@@ -24,7 +24,7 @@ class RAGAPIClient {
 
     try {
       const response = await fetch(url, config);
-      
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.detail || `HTTP ${response.status}: ${response.statusText}`);
@@ -83,7 +83,7 @@ class RAGAPIClient {
           if (line.startsWith('data: ')) {
             const data = line.slice(6);
             if (data === '[DONE]') return;
-            
+
             try {
               yield JSON.parse(data);
             } catch (e) {
@@ -123,7 +123,8 @@ class RAGAPIClient {
       body: formData,
       headers: {
         'X-API-Tier': this.defaultHeaders['X-API-Tier']
-      }
+      },
+      signal: AbortSignal.timeout(60000) // 60 segundos timeout
     });
 
     if (!response.ok) {
@@ -236,7 +237,7 @@ class RAGAPIClient {
         return await requestFn();
       } catch (error) {
         if (attempt === maxRetries) throw error;
-        
+
         console.warn(`Request failed, retrying in ${delay}ms... (attempt ${attempt}/${maxRetries})`);
         await new Promise(resolve => setTimeout(resolve, delay * attempt));
       }

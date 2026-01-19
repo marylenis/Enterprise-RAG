@@ -22,3 +22,5 @@ datasets
 transformers
 evaluate
 prometheus-client
+sentence-transformers
+pytest-docker

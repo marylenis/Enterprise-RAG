@@ -1,8 +1,11 @@
+from fastapi import FastAPI, Depends, HTTPException, Request, UploadFile, File
+import shutil
 import os
-from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
+from fastapi import Query
+from pydantic import Field
 from src.containers import Container
 from src.hybrid_engine import HybridQueryEngine
 from src.vector_store import VectorIndexManager
@@ -32,14 +35,23 @@ app.add_middleware(CostControlMiddleware, cost_optimizer=cost_optimizer)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["*"],
+    allow_credentials=True,
 )
+
+
+# Add OPTIONS handler for CORS preflight
+@app.options("/{path:path}")
+async def options_handler(path: str):
+    """Handle OPTIONS requests for CORS preflight"""
+    return {"status": "ok"}
 
 
 # Request/Response Models
 class QueryRequest(BaseModel):
-    query: str
+    query: str = Field(..., min_length=1, description="Query cannot be empty")
     engine_type: str = "hybrid"  # hybrid, vector
 
 
@@ -47,6 +59,11 @@ class QueryResponse(BaseModel):
     query: str
     response: str
     sources: Optional[List[str]] = []
+
+
+class DeleteRequest(BaseModel):
+    file_path: str
+    hash: str
 
 
 class IngestRequest(BaseModel):
@@ -92,6 +109,9 @@ def query_system(
     hybrid_engine: HybridQueryEngine = Depends(get_hybrid_engine),
     vector_only_engine=Depends(get_vector_only_engine),
 ):
+    """
+    Primary RAG query endpoint that supports multiple engine types.
+    """
     try:
         # Extract client info
         client_id = http_request.client.host
@@ -117,7 +137,7 @@ def query_system(
             raise HTTPException(status_code=429, detail=token_check["reason"])
 
         # Process query
-        if request.engine_type == "hybrid":
+        if request.engine_type == "hybrid" or request.engine_type == "graph":
             response = hybrid_engine.custom_query(request.query)
         else:
             response = vector_only_engine.query(request.query)
@@ -138,13 +158,84 @@ def query_system(
 
         # Cache the response
         cache_manager.cache_response(
-            request.query, query_response.dict(), request.engine_type
+            request.query, query_response.model_dump(), request.engine_type
         )
 
         return query_response
 
     except HTTPException:
         raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/delete-document")
+async def delete_document(
+    file_path: str = Query(...),
+    hash: str = Query(...),
+    vector_manager: VectorIndexManager = Depends(get_vector_manager),
+    graph_manager: GraphManager = Depends(get_graph_manager),
+):
+    """
+    Delete a document from both vector store and graph store
+    """
+    try:
+        file_hash = hash
+
+        if not file_path or not file_hash:
+            raise HTTPException(
+                status_code=400, detail="file_path and hash are required"
+            )
+
+        # Delete from vector store
+        vector_manager.delete_document(file_hash)
+
+        # Delete from graph store
+        graph_manager.delete_document_by_hash(file_hash)
+
+        # Delete physical file
+        try:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+        except Exception as e:
+            print(f"Could not delete physical file {file_path}: {e}")
+
+        return {"status": "success", "message": "Document deleted successfully"}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/upload", response_model=IngestResponse)
+async def upload_file(
+    file: UploadFile = File(...),
+    author: str = "Web User",
+    vector_manager: VectorIndexManager = Depends(get_vector_manager),
+    graph_manager: GraphManager = Depends(get_graph_manager),
+):
+    try:
+        # Save file to data directory
+        data_dir = os.path.join(os.getcwd(), "data")
+        os.makedirs(data_dir, exist_ok=True)
+        file_path = os.path.join(data_dir, file.filename)
+
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+        # Trigger ingestion for this specific file
+        processed_count = vector_manager.index_documents(
+            data_dir,
+            author=author,  # Re-scan directory for simplicity, or we could pass specific file if supported
+        )
+
+        # Graph Indexing (simplistic - reloads all)
+        # For a production system this should be more targeted
+        reader = get_directory_reader(data_dir)
+        documents = reader.load_data()
+        if documents:
+            graph_manager.index_documents(documents)
+
+        return IngestResponse(status="success", files_processed=processed_count)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -180,7 +271,11 @@ def get_audit_trail(vector_manager: VectorIndexManager = Depends(get_vector_mana
     # Retrieve audit from SQLite
     try:
         results = vector_manager.audit_manager.get_audit_log()
-        return results
+        # Convert timestamp to string to avoid JSON serialization issues
+        for item in results:
+            if "timestamp" in item:
+                item["timestamp"] = str(item["timestamp"])
+        return {"audit_trail": results}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

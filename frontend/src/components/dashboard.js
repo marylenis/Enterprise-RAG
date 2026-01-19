@@ -2,6 +2,8 @@
  * Dashboard Main Component - Aggregated from all pages
  */
 
+import { API } from '../api/client.js';
+
 class DashboardComponent extends HTMLElement {
   constructor() {
     super();

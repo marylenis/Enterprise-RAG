@@ -1,0 +1,28 @@
+# Sample Documents for Testing
+
+This is a sample text document used for integration testing of the Enterprise RAG system.
+
+## Key Information
+
+The Enterprise RAG system provides:
+- Document indexing and retrieval
+- Hybrid search capabilities
+- Real-time query processing
+- Multi-format document support
+
+## Technical Architecture
+
+The system uses:
+- FastAPI for the REST API
+- Qdrant for vector storage
+- FalkorDB for graph storage
+- Redis for caching
+- OpenAI embeddings
+
+## Sample Query Scenarios
+
+1. "What are the main components of the RAG system?"
+2. "How does document ingestion work?"
+3. "What databases are used in the system?"
+
+This document should be indexed and searchable during integration tests.
