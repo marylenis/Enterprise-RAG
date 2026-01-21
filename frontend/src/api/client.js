@@ -173,12 +173,19 @@ class RAGAPIClient {
   }
 
   /**
-   * Run system evaluation
-   */
-  async runEvaluation() {
-    return this.request('/evaluate', {
-      method: 'POST'
-    });
+    * Run system evaluation with optional custom queries
+    */
+  async runEvaluation(queries = null) {
+    const options = {
+      method: 'POST',
+      headers: { ...this.defaultHeaders }
+    };
+
+    if (queries && queries.length > 0) {
+      options.body = JSON.stringify({ queries });
+    }
+
+    return this.request('/evaluate', options);
   }
 
   /**
@@ -229,8 +236,8 @@ class RAGAPIClient {
   }
 
   /**
-   * Retry mechanism for failed requests
-   */
+    * Retry mechanism for failed requests
+    */
   async withRetry(requestFn, maxRetries = 3, delay = 1000) {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
@@ -242,6 +249,28 @@ class RAGAPIClient {
         await new Promise(resolve => setTimeout(resolve, delay * attempt));
       }
     }
+  }
+
+  /**
+   * Settings API
+   */
+  async getSettings() {
+    return this.request('/settings');
+  }
+
+  async getCategorySettings(category) {
+    return this.request(`/settings/${category}`);
+  }
+
+  async updateSetting(category, key, value) {
+    return this.request('/settings', {
+      method: 'PUT',
+      body: JSON.stringify({ category, key, value })
+    });
+  }
+
+  async resetSettings() {
+    return this.request('/settings/reset', { method: 'POST' });
   }
 }
 
@@ -266,7 +295,11 @@ export const API = {
   getAPITier: () => apiClient.getAPITier(),
   createWebSocket: (endpoint) => apiClient.createWebSocket(endpoint),
   batchQuery: (queries, engineType) => apiClient.batchQuery(queries, engineType),
-  withRetry: (requestFn, maxRetries, delay) => apiClient.withRetry(requestFn, maxRetries, delay)
+  withRetry: (requestFn, maxRetries, delay) => apiClient.withRetry(requestFn, maxRetries, delay),
+  getSettings: () => apiClient.getSettings(),
+  getCategorySettings: (category) => apiClient.getCategorySettings(category),
+  updateSetting: (category, key, value) => apiClient.updateSetting(category, key, value),
+  resetSettings: () => apiClient.resetSettings()
 };
 
 export default apiClient;

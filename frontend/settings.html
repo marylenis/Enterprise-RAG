@@ -13,19 +13,13 @@
     <link rel="stylesheet" href="/src/styles/main.css" />
 </head>
 
-<body class="bg-background-dark font-display text-white overflow-hidden h-screen flex flex-col">
+<body class="bg-background-dark font-display text-white h-screen flex flex-col">
     <nav-component></nav-component>
-    <div class="p-8">
-        <h1 class="text-3xl font-bold mb-4">Settings</h1>
-        <p class="text-white/60">Configure your RAG environment.</p>
-        <div class="mt-8 p-6 border border-white/10 rounded-2xl">
-            <h3 class="text-xl font-bold mb-4">API Configuration</h3>
-            <p>Endpoint: /query</p>
-        </div>
-    </div>
+    <settings-component></settings-component>
 
     <script type="module" src="/src/api/client.js"></script>
     <script type="module" src="/src/components/navigation.js"></script>
+    <script type="module" src="/src/components/settings.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const nav = document.querySelector('nav-component');
