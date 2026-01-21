@@ -12,13 +12,19 @@ class RateLimiter:
     def __init__(self):
         self.requests = defaultdict(list)
         self.lock = threading.Lock()
+        self._load_rate_limits()
 
-        # Rate limiting configuration
-        self.rate_limits = {
-            "default": {"requests": 100, "window": 3600},  # 100 requests/hour
-            "premium": {"requests": 1000, "window": 3600},  # 1000 requests/hour
-            "trial": {"requests": 20, "window": 3600},  # 20 requests/hour
-        }
+    def _load_rate_limits(self):
+        try:
+            from src.settings_manager import get_rate_limits
+
+            self.rate_limits = get_rate_limits()
+        except Exception:
+            self.rate_limits = {
+                "default": {"requests": 100, "window": 3600},
+                "premium": {"requests": 1000, "window": 3600},
+                "trial": {"requests": 20, "window": 3600},
+            }
 
     def is_allowed(self, client_id: str, tier: str = "default") -> Dict[str, Any]:
         """Check if request is allowed based on rate limits"""
@@ -252,6 +258,14 @@ class CostControlMiddleware:
             # Extract client info (simplified - in production use proper auth)
             client_id = request.client.host
             tier = request.headers.get("X-API-Tier", "default")
+
+            # Skip tracking for system/management endpoints to avoid false query counts
+            path = scope.get("path", "")
+            if any(
+                path.startswith(p) for p in ["/health", "/stats/", "/audit", "/cache"]
+            ):
+                await self.app(scope, receive, send)
+                return
 
             # Check rate limiting
             rate_check = self.cost_optimizer.rate_limiter.is_allowed(client_id, tier)

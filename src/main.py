@@ -3,7 +3,7 @@ import shutil
 import os
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from fastapi import Query
 from pydantic import Field
 from src.containers import Container
@@ -40,13 +40,6 @@ app.add_middleware(
     expose_headers=["*"],
     allow_credentials=True,
 )
-
-
-# Add OPTIONS handler for CORS preflight
-@app.options("/{path:path}")
-async def options_handler(path: str):
-    """Handle OPTIONS requests for CORS preflight"""
-    return {"status": "ok"}
 
 
 # Request/Response Models
@@ -275,7 +268,7 @@ def get_audit_trail(vector_manager: VectorIndexManager = Depends(get_vector_mana
         for item in results:
             if "timestamp" in item:
                 item["timestamp"] = str(item["timestamp"])
-        return {"audit_trail": results}
+        return results
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -325,12 +318,113 @@ def clear_cache(pattern: Optional[str] = None):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+class SettingsUpdateRequest(BaseModel):
+    category: str
+    key: str
+    value: Any
+
+
+class SettingsCategoryUpdateRequest(BaseModel):
+    values: Dict[str, Any]
+
+
+@app.get("/settings")
+def get_all_settings():
+    """Get all current settings"""
+    from src.settings_manager import get_settings_dict
+
+    try:
+        return get_settings_dict()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/settings/{category}")
+def get_category_settings(category: str):
+    """Get settings for a specific category"""
+    from src.settings_manager import get_category
+
+    try:
+        settings = get_category(category)
+        if settings is None:
+            raise HTTPException(status_code=404, detail="Category not found")
+        return {category: settings}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.put("/settings")
+def update_setting(request: SettingsUpdateRequest):
+    """Update a specific setting"""
+    from src.settings_manager import update_setting as update_setting_func
+
+    try:
+        success = update_setting_func(request.category, request.key, request.value)
+        if success:
+            return {
+                "status": "updated",
+                "category": request.category,
+                "key": request.key,
+                "value": request.value,
+            }
+        raise HTTPException(status_code=400, detail="Failed to update setting")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.put("/settings/{category}")
+def update_category_settings(category: str, request: SettingsCategoryUpdateRequest):
+    """Update an entire category with new values"""
+    from src.settings_manager import update_category as update_category_func
+
+    try:
+        success = update_category_func(category, request.values)
+        if success:
+            return {"status": "updated", "category": category, "values": request.values}
+        raise HTTPException(status_code=400, detail="Failed to update category")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/settings/reset")
+def reset_settings():
+    """Reset all settings to defaults"""
+    from src.settings_manager import reset_to_defaults
+
+    try:
+        success = reset_to_defaults()
+        if success:
+            return {
+                "status": "reset",
+                "message": "All settings have been reset to defaults",
+            }
+        raise HTTPException(status_code=500, detail="Failed to reset settings")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/evaluate")
-async def run_evaluation():
+async def run_evaluation(request: Request = None):
     """Run RAG system quality evaluation"""
     try:
+        body = await request.json() if request else {}
+        custom_queries = body.get("queries", None)
+
         evaluator = RAGEvaluator()
-        test_queries = evaluator.generate_test_queries("enterprise")
+
+        if custom_queries and len(custom_queries) > 0:
+            test_queries = custom_queries
+        else:
+            test_queries = evaluator.generate_test_queries("enterprise")
+
         results = await evaluator.evaluate_system(test_queries)
 
         return {

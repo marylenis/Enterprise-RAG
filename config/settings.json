@@ -1,0 +1,29 @@
+{
+  "api": {
+    "engine_type": "hybrid",
+    "timeout": 30,
+    "max_retries": 3
+  },
+  "cache": {
+    "enabled": true,
+    "ttl_seconds": 3600,
+    "max_entries": 1000
+  },
+  "rate_limiting": {
+    "default_tier": "default",
+    "default_requests": 100,
+    "default_window": 3600,
+    "trial_requests": 20,
+    "trial_window": 3600,
+    "premium_requests": 1000,
+    "premium_window": 3600
+  },
+  "ui_preferences": {
+    "theme": "dark",
+    "refresh_interval": 5,
+    "compact_mode": false,
+    "show_stats": true,
+    "language": "en"
+  },
+  "last_modified": "2026-01-21T22:17:53.192835"
+}
