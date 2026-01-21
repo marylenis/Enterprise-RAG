@@ -21,7 +21,7 @@
 | v0.5 - Production | Phase 5 | Complete | 100% |
 | v0.6 - Frontend | Phase 6 | Complete | 100% |
 | v0.6.1 - Refinements | Phase 6 | Complete | 100% |
-| **v1.0** | **Phase 7** | **In Progress** | **20%** |
+| **v1.0** | **Phase 7** | **Complete** | **100%** |
 | | 07-01: Backend Settings API | ✅ Complete | |
 | | 07-02: Frontend Settings | ✅ Complete | |
 
@@ -41,11 +41,12 @@
 - Backend optimizations (evaluation queries, JSON sanitization, nginx timeouts)
 
 **Current State:**
-- v0.6.1 refinements complete with all new components implemented
+- **v0.6.1 refinements** complete with all new components implemented
+- **Phase 7: Settings Configuration** fully implemented and verified
+  - Backend Settings API with settings_manager.py and endpoints ✅
+  - Frontend Settings component with full UI ✅
 - System is production-ready with all core features and refinements
-- Ready for v1.0 planning and next milestone definition
-- **Phase 7:** Backend Settings API (07-01-PLAN.md) - ✅ Complete
-- **Phase 7:** Frontend Settings component (07-02-PLAN.md) - ✅ Complete
+- v1.0 milestone complete - all phases implemented
 
 ---
 
@@ -127,11 +128,14 @@
 
 ### Next Steps
 
-1. **Complete Phase 7**: Both plans now complete
-   - Plan 01: Backend Settings API ✅ Complete
-   - Plan 02: Frontend Settings component ✅ Complete
-2. **Verify Settings**: Test the complete settings workflow
-3. **Complete v1.0**: Once all features are implemented
+1. **v1.0 Milestone Complete** ✅
+   - All 7 phases implemented and verified
+   - Settings Configuration adds final polish to production system
+
+2. **Available Actions:**
+   - `/gsd-audit-milestone` — Full milestone audit with E2E verification
+   - `/gsd-complete-milestone` — Archive v1.0, start v1.1 planning
+   - `/gsd-verify-work` — Manual acceptance testing before completion
 
 ### Blockers
 
