@@ -13,21 +13,14 @@
     <link rel="stylesheet" href="/src/styles/main.css" />
 </head>
 
-<body class="bg-background-dark font-display text-white overflow-hidden h-screen flex flex-col">
+<body class="bg-background-dark font-display text-white h-screen flex flex-col">
     <nav-component></nav-component>
-    <div class="p-8">
-        <h1 class="text-3xl font-bold mb-4">Quality Metrics</h1>
-        <p class="text-white/60">RAGAS evaluation scores and insights.</p>
-        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="p-6 border border-white/10 rounded-2xl">
-                <h3 class="text-xl font-bold mb-4">Faithfulness / Relevancy</h3>
-                <div class="h-64 bg-white/5 rounded-xl flex items-center justify-center">Radar Chart Placeholder</div>
-            </div>
-        </div>
-    </div>
+    <quality-component></quality-component>
 
     <script type="module" src="/src/api/client.js"></script>
     <script type="module" src="/src/components/navigation.js"></script>
+    <script type="module" src="/src/components/quality.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const nav = document.querySelector('nav-component');
